@@ -1,0 +1,254 @@
+@charset "utf-8";
+/**
+ * rpTransfer - a simple web app for asynchronously transferring single files
+ * get it at code.rasenplanscher.info
+ */
+
+/* reset the most important browser defaults */
+* {
+	background: none;
+	border: 0 solid #fff;
+	border-collapse: separate;
+	color: inherit;
+	direction: ltr;
+	float: none;
+	font-family: 'DejaVu Sans', 'Verdana', 'Arial', 'Helvetica', sans-serif;
+	font-size: 1em;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	line-height: 1.7em;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	text-decoration: none;
+	text-indent: 0;
+	text-transform: none;
+	vertical-align: top;
+}
+
+/* general setup */
+html {
+	background: #eee url('background.png') repeat 30% 0;
+	color: #444;
+	font-size: 17px;
+	/* avoid horizontal skipping due to changing heights */
+	overflow: scroll;
+	/* anchor absolutely positioned elements to document root instead of viewport */
+	position: relative;
+}
+
+body {
+	margin: auto;
+	padding: 50px 50px 80px 260px;
+	width: 600px;
+}
+
+h1, .notice, .hint, form, table {
+	border: 1px solid #bbb;
+	/**
+	 * since the round corners do look so much nicer _and_
+	 * because gecko and webkit are actually kind of not wrong in their way of dealing with the current status of CSS3
+	 * I'll accept this until CSS3 (and thus border-radius) gets recommendation status
+	 */
+	border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;
+	overflow: hidden;
+}
+
+h1 {
+	background: #fff url('logo.png') no-repeat center;
+	float: left;
+	height: 0;
+	margin-left: -202px;
+	padding: 137px 0 0 180px;
+	width: 0;
+}
+
+h2 {
+	color: #111;
+	text-align: center;
+}
+
+p {
+	margin-top: 1.7em;
+}
+h2 + p, p:first-child {
+	margin-top: 0;
+}
+
+	
+/* labels are nice */
+label, input {
+	display: block;
+	margin-bottom: .425em;
+	position: relative;
+}
+	/* display inputs the same, even within a label */
+	label input {
+		position: absolute;
+			top: 0;
+			left: 0;
+	}
+	/* as always, input fields need some special treatment */
+	input {
+		border: 1px solid #ddd;
+		border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+		margin-left: 160px;
+		padding: 3px 20px;
+		width: 305px;
+	}
+	input[type="submit"] {
+		color: #111;
+		cursor: pointer;
+		margin: .85em 0 0 160px;
+		width: auto;
+	}
+	input[type="submit"]:active, #upload-form input[type="submit"]:active {
+		background-color: #444;
+		color: #fff;
+	}
+	#upload-form input[type="submit"] {
+		background: #fff url('upload.png') no-repeat 17px 50%;
+		padding-left: 50px;
+	}
+	
+	/* as tiresomely usual, file input are a pain in the rear */
+	input[type="file"] {
+		width: 345px;
+	}
+
+
+/* considering their central role here, the download links should look especially nice */
+.file-link {
+	background: url('download.png') no-repeat 0 4px;
+	color: #069;
+	display: block;
+	padding-left: 35px;
+}
+
+
+/* the source link should be as unobtrusive as possible while still visible */
+#source-link {
+	position: absolute;
+		bottom: 20px;
+		right: 20px;
+}
+	#source-link a {
+		background: #eee;
+		border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;
+		color: #777;
+		display: block;
+		height: 30px;
+		line-height: 30px;
+		opacity: .6;
+		text-align: center;
+		text-decoration: none;
+		width: 30px;
+	}
+
+
+/* the "visible" blocks */
+.notice, form, table, .hint:hover {
+	background: #fff;
+	margin-bottom: 20px;
+	padding: 25px;
+}
+
+.hint {
+	background: #fff url('hint.png') no-repeat center;
+	border-color: #00c;
+	height: 0;
+	margin: 0 100px 0 auto;
+	opacity: .6;
+	padding: 30px 0 0 30px;
+	width: 0;
+}
+	.hint:hover {
+		height: auto;
+		margin: 0 100px;
+		opacity: 1;
+		width: auto;
+	}
+	.hint h2 {
+		color: #008;
+	}
+	.hint p {
+		color: #00c;
+	}
+
+.success {
+	border-color: #080;
+}
+	.success h2 {
+		color: #060;
+	}
+	.success p {
+		color: #009000;
+	}
+
+.failure {
+	background: #e00;
+	border-color: #a00;
+}
+	.failure h2 {
+		color: #ff0;
+	}
+	.failure p {
+		color: #fff;
+	}
+
+.error {
+	background: #000;
+	border-color: #e00;
+}
+	.error h2 {
+		color: #f00;
+	}
+	.error p {
+		color: #fff;
+	}
+
+/* this takes care of the list view */
+table {
+	border-spacing: 0;
+	width: 100%;
+}
+	th {
+		font-size: .8em;
+	}
+		th.name {
+			font-size: 1em;
+		}
+	td {
+		font-size: .8em;
+		padding-right: 12px;
+	}
+		td.name {
+			padding: .85em 0 0;
+			text-align: right;
+		}
+		td.name .file-link {
+			float: left;
+			font-size: 1.25em;
+		}
+	.type, .expire, .size, .unit {
+		line-height: .5em;
+	}
+		.size {
+			padding: 0;
+			text-align: right;
+		}
+			.unit {
+				padding-left: 8px;
+			}
+	.virgin td {
+		color: #080;
+	}
+	/* tell 'em they're too late, muahahaha */
+	.expired td {
+		opacity: .6;
+	}
+		.expired .file-link {
+			background-image: url('expired.png');
+			color: #a00;
+		}

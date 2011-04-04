@@ -1,0 +1,84 @@
+##
+# Configuration
+# for details see README
+##
+
+# the application locale
+# acceptable values: "en", "de", ""
+"locale": "en",
+
+# the length of a file ID
+# changing this makes all previously uploaded files inaccessible
+# a number between 4 and 40
+"ID length": "8",
+
+# "time to live": the time a file will be available after upload
+# accepted units are "d" for day, "h" for hours, and "m" for minutes
+"file ttl": "10d",
+# "time to decompose": the time after a file's expiration before it is deleted
+# same as file ttl
+"file ttd": "20d",
+# the time that has to pass between purges
+# same as file ttl
+"purge interval": "5d",
+
+##
+# authentication
+##
+"authentication": {
+	# how authentication is handled
+	# possible values: "simple", "multiuser", "digest"
+	"mode": "simple",
+	
+	# for simple authentication
+	"pass": {
+		"base": "upload",
+		"list": "upload+list"
+	},
+	
+	# for digest authentication
+	# changing this makes rehashing of passes necessary
+	"realm": "rpTransfer"
+},
+
+
+##
+# mapping of upload results to file names (spaces will be converted to underlines)
+#
+# entering numbers will trigger HTTP response codes along with the relevant error snippets
+# 413 -> file too large; 500 -> server error
+#
+"upload result": {
+	# upload succeeded
+	"success": "successful upload",
+	
+	# the uploaded file exceeds the upload_max_filesize directive in the server configuration/htaccess file
+	"size error, ini": "413",
+	
+	# the uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form
+	"size error, form": "413",
+	
+	# the file was only partially uploaded
+	"partial upload": "partial upload",
+	
+	# no file was uploaded
+	"no file": "no file",
+	
+	# missing a temporary folder
+	"no tmp directory": "500",
+	
+	# failed to write file to disk
+	"can't write": "500",
+	
+	# file upload stopped by extension
+	"extension error": "500",
+	
+	# the file was too large, thus apache aborted receiving and providing the post data
+	"web server abort": "413",
+	
+	# for some reason, the uploaded file could not be saved
+	"not saved": "500",
+	
+	# an unknown error has occurred
+	"unknown error": "500"
+}

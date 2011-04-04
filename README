@@ -1,0 +1,345 @@
+  
+  rpTransfer - a simple web app for asynchronously transferring single files
+  Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+  
+  This program is free software: you can redistribute it and/or 
+  modify it under the terms of the MIT License as published at
+  http://www.opensource.org/licenses/mit-license.php
+  
+  This basically means: do whatever you like with it, but include
+  the license and don't sue for any reason. Find the complete
+  license in the accompanying file "LICENSE".
+  
+################################################################################
+
+
+
+
+Table of Contents
+=================
+* Introduction
+  * What it is
+  * What it is not
+* Requirements
+* Installation
+  * Advanced
+* Configuration
+  * Configuration File
+  * Users Directory
+  * Snippets Directory
+  * Public Directory
+  * Htaccess File
+* Known Issues
+
+
+
+
+Introduction
+============
+This is a little something I produced in response to my company's frequent
+problems with email attachments sent across different infrastructures. My
+solution was simple: replace attachments with download links. Direct file
+transfers just work far more reliably than email attachments.
+
+Later on I went over it to make it a little cleaner and to add digest
+authentication. Why digest authentication? Because I felt like it -- I doubt
+its utility here, but now it's there to use. Originally, this was not intended
+as a real multi-user application, but since digest authentication requires
+a user name, I also added the "multiuser" authentication.
+
+Well that's about it as far as the past goes. The future is pretty much the
+present -- I currently have no intention of extending this beyond what's here
+now.
+
+what it is
+----------
+This application aims to be as simple as possible while offering these features:
+* file upload by authorized people
+  * optionally with named user accounts
+  * optionally with encrypted login
+* file download by anyone who has the file's download URI
+* non-guessable download URIs
+* GUI without "eye cancer" ;)
+* logging of all relevant actions and steps
+
+what it is not
+--------------
+Generally, this is not anything beyond what I specified above. Specifically,
+you should look elsewhere if you want some of this:
+* encrypted file transfer (can be done by running this over SSL/TLS, _but_
+  that's absurd since the download does not require authentication -- by design)
+* authentication before download (in itself pretty easy to get in here, but
+  doesn't make sense without other additions)
+* online user account management (dude, just too much)
+* online configuration (not worth the hassle)
+* enterprise grade scalability
+
+For any and all of these there are solutions available that do offer them,
+probably some of them for free.
+
+
+
+
+Requirements
+============
+I don't really know. I developed this with PHP 5.3 on an Apache web server 2.2
+with mod_rewrite. It will probably work with older software, but I don't know
+how old. Frankly, I'm too lazy to check. Also, I don't really care because
+Apache 2.2 and PHP 5.3 have been around long enough for adoption.
+
+Apart from that, I'm pretty sure it would be rather easy to make this run on
+Apache 1.3 and PHP 4 -- I'm not using any really fancy stuff here. The
+.htaccess file would certainly need no changes at all.
+
+I am not making any promises -- if it doesn't work for you, have a look at your
+logs and fix what they tell you to fix. Mostly, it'll be about activating
+server modules and correcting file permissions.
+
+
+
+
+Installation
+============
+As everything else here, this should be simple (for details on unclear points,
+see the "advanced" section):
+* unpack the archive (probably done, seeing as you're reading this ^__^)
+* put it where your web server will find it
+* create these directories and make sure that your web server can write to them:
+  * files
+  * logs
+  * metadata
+* send me money (or, alternatively, your bank account details) -- girls and
+  food are great, too
+
+Well, that's it already, now you'll want to configure your brand new web app --
+see the "configuration" section for that.
+
+Advanced
+--------
+Woohoo! "Advanced" section :) Actually, it's not that advanced, it's more about
+me telling you some additional details.
+
+Unpacking: Erm, dude! Let's just say that is beyond the scope of this
+document...
+
+Location: Generally, you should put this where you put all your applications
+and then setup a new domain (a third-level domain will do nicely) pointing to
+it. I made sure you can use this in a directory within a domain, but I do think
+that every application should have its own domain. That should not be a
+problem. If your host/domain provider doesn't let you setup new subdomains at
+will, you should switch to another one!
+
+Permissions: You should give ownership of the directories "files", "logs", and
+"metadata" to your web server's user, or at least its user group. That way
+everything will run smoothly and be pretty much as secure as it's gonna get in
+this regard. Then again, you will probably get away with just doing
+'chmod 0777 files logs metadata' since, in case of a security breach those
+directories will probably be among the least of your concerns...
+
+Money and stuff: The economic reality at the time I'm writing this is that I
+need money. The physiological reality at this time is that I need sustenance in
+the form of food and drink. Also, I kind of like girls. So, if you have any of
+those things in excess of what you need, I'll gladly accept them as tribute or
+whatever. That is, however, not true if the goods in question are rotten --
+please don't send that. To proceed, get in touch with me -- see the "contact"
+section.
+
+
+
+
+Configuration
+=============
+There are several ways to customize this bugger without messing with its
+internals:
+* configuration file -- set some parameters that change the behaviour
+* users directory -- setup users in multi-user environments
+* snippets directory -- change the markup output
+* public directory -- change the non-markup output
+* htaccess file -- limit uploadable file sizes and time limits
+
+Note that you need not change any setting -- this should run out of the box, as
+long as your server meets all the requirements. _But_ you should make a
+decision as to which mode of authentication to use and set that up. If you
+stick with "simple" you should change the passes for that. Otherwise see the
+section about the users directory and replace the samples with real users.
+
+Configuration File
+------------------
+The file by the name of "CONFIGURATION" contains the configuration for the
+application's behaviour. The settings have this format:
+  "key": "value"
+
+_Don't_ change _anything_ other than the _values_!
+
+The configuration file is annotated, but this here might help in understanding
+it fully and, more importantly, how it affects the application and you.
+
+It starts of with some basic data:
+* locale: the application locale, basically a 2-character language code. The
+  locales are expected as sub directories of snippets. In those directories, in
+  turn, are expected parts of HTML files that are used to build the
+  application's HTML output. By default available are these locales:
+  * "": displays only a bare minimum of text, no complete sentences, used as
+    fallback in case a snippet is missing from the current locale; also, this
+    locale's files are found immediately in the snippets directory
+  * "en": English, final fallback for missing snippets
+  * "de": German
+* ID length: the length of a file ID. Every uploaded file gets a unique
+  identifier: its ID. A longer file ID enables more files simultaneously stored
+  and fewer retries to find unique IDs. A shorter file ID is usually more
+  visually appealing. Generally, IDs should be at least 4 characters long.
+  Anything shorter looks strange and will leed to unnecessarily high numbers of
+  retries during ID generation. The maximum length is 40 characters -- any
+  higher setting will have no consequence. You will probably not need even that
+  high a value:
+  * "4": more than 60,000 unique IDs
+  * "8": more than 4,000,000,000 different IDs
+  _Note_: If you do need a value beyond ten or so characters, this app will
+  probably be insufficient for your needs!
+  _Note_: changing this makes all previously uploaded files inaccessible --
+  they are not deleted, but a request for such a file will yield an error of
+  the type "unknown file".
+* file ttl: "time to live" -- the time a file will be available after upload.
+  This dependends on your taste and server capacity. Some sample values:
+  * "7d": exactly one week
+  * "24h": one day, alternatively you can write "1d" or "1440m" ;)
+  * "2d 12h": two days and a half
+* "purge interval": the time that has to pass between purges. Takes the same
+  values as "file ttl"
+
+Next are the authentication settings. So you don't miss them, they're
+conveniently announced and indented. They are these:
+* "mode": how authentication is handled. This is the most important setting as
+  far as outward security is concerned -- the possible values:
+  * "simple": This is the default setting. With this there are two logins --
+    one for uploading files and one for viewing the list (with the latter, one
+    can also upload files). This grants some basic security in that a potential
+    attacker would at least need some kind of reason to try and break in. This
+    can be cracked fairly easily, but it will suffice in most cases due to the
+    public nature of the application and because even after breaking in, the
+    most an attacker can do is filling your server's hard drive with his files.
+    _Note_: With "can be cracked fairly easily" I am talking about a motivated
+    and somewhat skilled individual (or a script-kiddie) -- cracking this
+    is not feasible with a normal user's basic user agent. An attack would by
+    no means be expensive, but most people who have the know-how won't bother
+    pestering you -- unless you give them a reason to.
+  * "multiuser": As the name says, with this you can setup several different
+    users, all with their own user names and pass codes. Permission to access
+    the list view is granted on a per-user basis. The security level is pretty
+    much the same as with "simple". The main advantage is that you can
+    see who uploaded which file because the user names are logged with the
+    metadata.
+    _Note_: If you think the fact that there are several users makes an attack
+    harder to any meaningful degree, you're mistaken. The only thing that may
+    take longer is finding a user with permission to access the list-view. If
+    the attacker is not too stupid, though, that extra time is negligible --
+    less than a second, assuming he has already collected the user data.
+  * "digest": This is as secure as it gets with this application. This one
+    uses encryption! Woohoo! This uses the well-known digest authentication
+    mechanism. That means when navigating to the app, the user is prompted by
+    his web client to tell his credentials. This happens through a normal
+    name/pass dialog, which the user is familiar with. The web client then
+    encrypts that data and sends the encrypted data to the app, which encrypts
+    the correct data. If both encrypted sets of data are the same, the user
+    can continue. This does indeed make the application considerably more
+    secure -- an attacker would now have to work to get in!
+    _Note_: Only the login itself is encrypted! This is no SSL/TLS!
+    _Note_: The increased security comes at a two-fold price:
+    * The execution takes more time, which probably won't be noticed by any user
+    * You have more work setting up the users; see the "users directory"
+      section for details
+* "pass": If "mode" is set to "simple", the login given by the user is
+  validated against the contents of this.
+  * "base": if the given login is the same as this setting's value, the user
+    may upload files
+  * "list": if the given login is the same as this setting's value, the user
+    may access the list view _and_ upload files
+  If you want to disallow the list-view altogether, you can just disable the
+  "list" key. If you don't need to exclude anyone from the list view who should
+  be able to upload files (e.g. you're the only one sending files), you can
+  just disable the "base" key.
+* "realm": This is used for digest authentication. Generally, you can leave
+  this as it is -- it doesn't affect what capabilities are used, or how. For
+  more details see the section on digest authentication.
+  _Note_: Changing this makes it necessary to rehash _all_ passes!
+
+Finally there's the "upload result" collection. This works in concert with the
+markup files in the snippets directory. Therefore these settings are only
+relevant if you intend on changing the HTML code. Every setting in this
+collection relates to a possible outcome of uploading a file. The keys are
+self-explanatory and annotated in the configuration file, so I won't go into
+more detail here. The only important thing to know here is: the value is used
+for the file name of the snippet that makes up the message part of the result
+page.
+
+Users Directory
+---------------
+If the authentication mode is set to "multiuser" or "digest" the directory by
+the name of "users" comes into play. It contains plain-text files. These
+represent valid users. The directory at first contains two sample users that
+illustrate the whole thing. One is called "user", the other one "digest".
+
+The file name is used as the user name, so if you want to setup a user
+"John Doe", you create a file "John Doe". Each file contains two key/value
+pairs. For multiuser authentication, one key is "pass", the other one is "list".
+For digest authentication the two keys are "hash" and "list". To see how the
+files are formatted, look at the sample files -- too simple to explain.
+
+The "list" key can have a value of 0 or 1. If it is 1, the user may access the
+list view; if it is 0, he cannot.
+
+The "pass" key takes the user's pass code. The sample user "user" has the pass
+"password".
+
+The "hash" key takes the user's pass digest hash. This hash is generated by
+applying the MD5 algorithm to the string that results from concatenating the
+the user name, the realm and the pass code, with colons in between:
+	"username:realm:passcode"
+
+To get that hash, you can do this in most shell environments:
+	echo -n 'username:realm:pass' | openssl md5
+
+The sample user "digest" has the pass "hash", so its hash is calculated like
+this (as long as the realm setting wasn't changed):
+	echo -n 'digest:rpTransfer:hash' | openssl md5
+
+Snippets Directory
+------------------
+The directory "snippets" contains the HTML part of the application.
+Non-localized snippets are immediately within, localized ones are in sub
+directories named after their respective locales. Snippets are used by their
+file names. If the snippet to be used is found in the directory corresponding
+to the current locale, that one is used. Otherwise, the non-localized file is
+used. Should that fail, the English-localized file (directory "en") is used. In
+case that also fails, an error message is thrown and the execution is aborted.
+
+Note that the final pages are expected to be valid XHTML. Also, for MSIE it is
+delivered as "text/html", so mind compatibility.
+
+Public Directory
+----------------
+This contains all static files, i.e. images and style sheets. Changing this is
+completely straightforward.
+
+Htaccess File
+-------------
+As this application is developed for the Apache web server it makes use of the
+.htaccess file, which is made available as "htaccess" for ease of use.
+
+The .htaccess file is part of the server configuration, local to the path where
+it resides. So you can break this app by editing that file -- as long as you
+stick with the comments, however, you should be fine.
+
+
+
+
+Known Issues
+============
+* Basically no error handling
+* Low level of security unless digest authentication is used
+* Digest authentication does not support these optional features:
+  * auth-int
+  * stale
+  * MD5-sess
+* file fields look wrong in every browser -- this is due to all the browser
+  developers treating them as special in regard to stylability
