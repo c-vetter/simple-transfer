@@ -102,9 +102,8 @@ Installation
 ============
 As everything else here, this should be simple (for details on unclear points,
 see the "advanced" section):
-* unpack the archive (probably done, seeing as you're reading this ^__^)
-* put it where your web server will find it
-* create these directories and make sure that your web server can write to them:
+* git-clone or download and unpack the archive
+* make sure that your web server can write to these directories:
   * files
   * logs
   * metadata
@@ -119,8 +118,23 @@ Advanced
 Woohoo! "Advanced" section :) Actually, it's not that advanced, it's more about
 me telling you some additional details.
 
-Unpacking: Erm, dude! Let's just say that is beyond the scope of this
-document...
+Git-clone: You need command-line access to your web server for this. That
+usually comes in the form of an ssh login. If you don't know what that is, ask
+your host or go with plan B (download and unpack). When you're logged into the
+command line, execute this:
+    git clone SOURCE DESTINATION
+where SOURCE is "https://github.com/rasenplanscher/rpTransfer.git" and
+DESTINATION is the directory where you want the application to reside. If
+unsure, ask your host about this. 
+
+Download and unpack: Use your favorite download tool (your web browser will do)
+to download either https://github.com/rasenplanscher/rpTransfer/tarball/master
+or https://github.com/rasenplanscher/rpTransfer/zipball/master and unpack it
+using your favorite archiving tool. If unsure, use the second download URI.
+Depending on your archiver you might end up with a directory containing the
+relevant files and directories or with one containing a single directory which
+contains the relevant files. Put the directory containing the relevant files on
+your web server.
 
 Location: Generally, you should put this where you put all your applications
 and then setup a new domain (a third-level domain will do nicely) pointing to
