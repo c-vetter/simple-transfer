@@ -18,7 +18,7 @@ $list_allowed = false;
 # also, the client needs to provide its credentials to get any further
 if (
  isset($nonce)
- &&
+ and
  $_SERVER['PHP_AUTH_DIGEST']
 ) {
 	# parse Authentication header as an array
@@ -42,9 +42,9 @@ if (
 	# if the nonce is different, either the client is a fraud or there has been an error
 	# either way, further processing is futile
 	if (
-	 ($authentication['nonce'] == $nonce)
-	 &&
-	 ($authentication['username'] == $username)
+	 $authentication['nonce'] == $nonce
+	 and
+	 $authentication['username'] == $username
 	) {
 		# get data for given username
 		$userdata = db_get_userdata($username);

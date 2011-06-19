@@ -29,7 +29,7 @@ if (!empty($_POST['username'])) {
 # show the login page if the client is not authenticated
 if (!$authorized)
 	error(401,
-		(empty($_POST['username']) && empty($_POST['pass'])) ?
+		empty($_POST['username']) && empty($_POST['pass']) ?
 		array('login, multiuser') :
 		array('login failure', 'login, multiuser') ,
 		array('uri' => $_SERVER['REQUEST_URI'])

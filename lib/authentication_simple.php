@@ -8,7 +8,7 @@ $pass =& $_configuration['authentication']['pass'];
 
 if (
  !empty($_POST['login'])
- &&
+ and
  in_array($_POST['login'], $pass)
 ) {
 	# client has sent login credentials and they check out

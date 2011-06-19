@@ -28,21 +28,21 @@ function db_exists($id, $find='all') {
 	# check for file
 	if (
 	 in_array('file', $find)
-	 &&
+	 and
 	 file_exists('files/'.$id)
 	)
 		return true;
 	# check for log
 	if (
 	 in_array('log', $find)
-	 &&
+	 and
 	 file_exists('logs/'.$id)
 	)
 		return true;
 	# check for metadata
 	if (
 	 in_array('metadata', $find)
-	 &&
+	 and
 	 file_exists('metadata/'.$id)
 	)
 		return true;
