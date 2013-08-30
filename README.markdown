@@ -1,15 +1,17 @@
-  
-  rpTransfer - a simple web app for asynchronously transferring single files
-  Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
-  
-  This program is free software: you can redistribute it and/or 
-  modify it under the terms of the MIT License as published at
-  http://www.opensource.org/licenses/mit-license.php
-  
-  This basically means: do whatever you like with it, but include
-  the license and don't sue for any reason. Find the complete
-  license in the accompanying file "LICENSE".
-  
+    
+    
+    rpTransfer - a simple web app for asynchronously transferring single files
+    Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+    
+    This program is free software: you can redistribute it and/or 
+    modify it under the terms of the MIT License as published at
+    http://www.opensource.org/licenses/mit-license.php
+    
+    This basically means: do whatever you like with it, but include
+    the license and don't sue for any reason. Find the complete
+    license in the accompanying file "LICENSE".
+    
+    
 ################################################################################
 
 
@@ -54,6 +56,7 @@ now.
 what it is
 ----------
 This application aims to be as simple as possible while offering these features:
+
 * file upload by authorized people
   * optionally with named user accounts
   * optionally with encrypted login
@@ -66,6 +69,7 @@ what it is not
 --------------
 Generally, this is not anything beyond what I specified above. Specifically,
 you should look elsewhere if you want some of this:
+
 * encrypted file transfer (can be done by running this over SSL/TLS, _but_
   that's absurd since the download does not require authentication -- by design)
 * authentication before download (in itself pretty easy to get in here, but
@@ -102,6 +106,7 @@ Installation
 ============
 As everything else here, this should be simple (for details on unclear points,
 see the "advanced" section):
+
 * git-clone or download and unpack the archive
 * make sure that your web server can write to these directories:
   * files
@@ -117,7 +122,7 @@ Advanced
 Woohoo! "Advanced" section :) Actually, it's not that advanced, it's more about
 me telling you some additional details.
 
-Git-clone: You need command-line access to your web server for this. That
+**Git-clone:** You need command-line access to your web server for this. That
 usually comes in the form of an ssh login. If you don't know what that is, ask
 your host or go with plan B (download and unpack). When you're logged into the
 command line, execute this:
@@ -126,7 +131,7 @@ where SOURCE is "https://github.com/rasenplanscher/rpTransfer.git" and
 DESTINATION is the directory where you want the application to reside. If
 unsure, ask your host about this. 
 
-Download and unpack: Use your favorite download tool (your web browser will do)
+**Download and unpack:** Use your favorite download tool (your web browser will do)
 to download either https://github.com/rasenplanscher/rpTransfer/tarball/master
 or https://github.com/rasenplanscher/rpTransfer/zipball/master and unpack it
 using your favorite archiving tool. If unsure, use the second download URI.
@@ -135,14 +140,14 @@ relevant files and directories or with one containing a single directory which
 contains the relevant files. Put the directory containing the relevant files on
 your web server.
 
-Location: Generally, you should put this where you put all your applications
+**Location:** Generally, you should put this where you put all your applications
 and then setup a new domain (a third-level domain will do nicely) pointing to
 it. I made sure you can use this in a directory within a domain, but I do think
 that every application should have its own domain. That should not be a
 problem. If your host/domain provider doesn't let you setup new subdomains at
 will, you should switch to another one!
 
-Permissions: You should give ownership of the directories "files", "logs", and
+**Permissions:** You should give ownership of the directories "files", "logs", and
 "metadata" to your web server's user, or at least its user group. That way
 everything will run smoothly and be pretty much as secure as it's gonna get in
 this regard. Then again, you will probably get away with just doing
@@ -156,6 +161,7 @@ Configuration
 =============
 There are several ways to customize this bugger without messing with its
 internals:
+
 * configuration file -- set some parameters that change the behaviour
 * users directory -- setup users in multi-user environments
 * snippets directory -- change the markup output
@@ -174,13 +180,14 @@ The file by the name of "CONFIGURATION" contains the configuration for the
 application's behaviour. The settings have this format:
   "key": "value"
 
-_Don't_ change _anything_ other than the _values_!
+*Don't* change *anything* other than the *values*!
 
 The configuration file is annotated, but this here might help in understanding
 it fully and, more importantly, how it affects the application and you.
 
 It starts of with some basic data:
-* locale: the application locale, basically a 2-character language code. The
+
+* **locale**: the application locale, basically a 2-character language code. The
   locales are expected as sub directories of snippets. In those directories, in
   turn, are expected parts of HTML files that are used to build the
   application's HTML output. By default available are these locales:
@@ -189,11 +196,11 @@ It starts of with some basic data:
     locale's files are found immediately in the snippets directory
   * "en": English, final fallback for missing snippets
   * "de": German
-* ID length: the length of a file ID. Every uploaded file gets a unique
+* **ID length**: the length of a file ID. Every uploaded file gets a unique
   identifier: its ID. A longer file ID enables more files simultaneously stored
   and fewer retries to find unique IDs. A shorter file ID is usually more
   visually appealing. Generally, IDs should be at least 4 characters long.
-  Anything shorter looks strange and will lead to unnecessarily high numbers of
+  Anything shorter looks strange and will leed to unnecessarily high numbers of
   retries during ID generation. The maximum length is 40 characters -- any
   higher setting will have no consequence. You will probably not need even that
   high a value:
@@ -204,17 +211,18 @@ It starts of with some basic data:
   _Note_: changing this makes all previously uploaded files inaccessible --
   they are not deleted, but a request for such a file will yield an error of
   the type "unknown file".
-* file ttl: "time to live" -- the time a file will be available after upload.
+* **file ttl**: "time to live" -- the time a file will be available after upload.
   This dependends on your taste and server capacity. Some sample values:
   * "7d": exactly one week
   * "24h": one day, alternatively you can write "1d" or "1440m" ;)
   * "2d 12h": two days and a half
-* "purge interval": the time that has to pass between purges. Takes the same
+* **purge interval**: the time that has to pass between purges. Takes the same
   values as "file ttl"
 
 Next are the authentication settings. So you don't miss them, they're
 conveniently announced and indented. They are these:
-* "mode": how authentication is handled. This is the most important setting as
+
+* **mode**: how authentication is handled. This is the most important setting as
   far as outward security is concerned -- the possible values:
   * "simple": This is the default setting. With this there are two logins --
     one for uploading files and one for viewing the list (with the latter, one
@@ -253,7 +261,7 @@ conveniently announced and indented. They are these:
     * The execution takes more time, which probably won't be noticed by any user
     * You have more work setting up the users; see the "users directory"
       section for details
-* "pass": If "mode" is set to "simple", the login given by the user is
+* **pass**: If "mode" is set to "simple", the login given by the user is
   validated against the contents of this.
   * "base": if the given login is the same as this setting's value, the user
     may upload files
@@ -263,7 +271,7 @@ conveniently announced and indented. They are these:
   "list" key. If you don't need to exclude anyone from the list view who should
   be able to upload files (e.g. you're the only one sending files), you can
   just disable the "base" key.
-* "realm": This is used for digest authentication. Generally, you can leave
+* **realm**: This is used for digest authentication. Generally, you can leave
   this as it is -- it doesn't affect what capabilities are used, or how. For
   more details see the section on digest authentication.
   _Note_: Changing this makes it necessary to rehash _all_ passes!
