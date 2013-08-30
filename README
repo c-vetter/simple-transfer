@@ -193,7 +193,7 @@ It starts of with some basic data:
   identifier: its ID. A longer file ID enables more files simultaneously stored
   and fewer retries to find unique IDs. A shorter file ID is usually more
   visually appealing. Generally, IDs should be at least 4 characters long.
-  Anything shorter looks strange and will leed to unnecessarily high numbers of
+  Anything shorter looks strange and will lead to unnecessarily high numbers of
   retries during ID generation. The maximum length is 40 characters -- any
   higher setting will have no consequence. You will probably not need even that
   high a value:
