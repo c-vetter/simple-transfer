@@ -107,8 +107,7 @@ see the "advanced" section):
   * files
   * logs
   * metadata
-* send me money (or, alternatively, your bank account details) -- girls and
-  food are great, too
+* send me money (or, alternatively, your bank account details)
 
 Well, that's it already, now you'll want to configure your brand new web app --
 see the "configuration" section for that.
@@ -149,14 +148,6 @@ everything will run smoothly and be pretty much as secure as it's gonna get in
 this regard. Then again, you will probably get away with just doing
 'chmod 0777 files logs metadata' since, in case of a security breach those
 directories will probably be among the least of your concerns...
-
-Money and stuff: The economic reality at the time I'm writing this is that I
-need money. The physiological reality at this time is that I need sustenance in
-the form of food and drink. Also, I kind of like girls. So, if you have any of
-those things in excess of what you need, I'll gladly accept them as tribute or
-whatever. That is, however, not true if the goods in question are rotten --
-please don't send that. To proceed, get in touch with me -- see the "contact"
-section.
 
 
 
