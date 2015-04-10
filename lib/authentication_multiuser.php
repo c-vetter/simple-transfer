@@ -1,7 +1,7 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 if (!empty($_POST['username'])) {
@@ -13,11 +13,11 @@ if (!empty($_POST['username'])) {
 		false;
 	# if the list flag is set, the client is allowed to access the list view
 	$list_allowed = $authorized && $userdata['list'];
-	
+
 	if ($authorized) {
 		# remember the username
 		$username = $_POST['username'];
-		
+
 		# have the client reload with a GET request
 		header(sprintf('Location: %s'
 			, $request_uri
@@ -34,3 +34,4 @@ if (!$authorized)
 		array('login failure', 'login, multiuser') ,
 		array('uri' => $_SERVER['REQUEST_URI'])
 	);
+

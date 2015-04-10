@@ -1,7 +1,7 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 # gather some basic information
@@ -34,11 +34,11 @@ if (
 		 ? $match[2]
 		 : $match[3]
 		;
-	
+
 	# logs out a client sending a different username after successful authentication
 	if (!$username)
 		$username = $authentication['username'];
-	
+
 	# if the nonce is different, either the client is a fraud or there has been an error
 	# either way, further processing is futile
 	if (
@@ -53,7 +53,7 @@ if (
 			, $_SERVER['REQUEST_METHOD']
 			, $request_uri
 		));
-		
+
 		# determine the response hash the authentic client would send
 		switch ($authentication['qop']) {
 			case '':
@@ -64,7 +64,7 @@ if (
 					, $request_hash
 				));
 			break;
-			
+
 			case 'auth':
 				# modern digest authentication, without integrity protection
 				if ($authentication['nc'] > $nonce_count) {
@@ -79,7 +79,7 @@ if (
 				}
 			break;
 		}
-		
+
 		# the client can be considered authentic if
 		# the response hash could successfully be determined from the given credentials
 		# and the sent response hash is identical to the calculated hash
@@ -97,7 +97,7 @@ if (!$authorized) {
 	# otherwise they would cause false negatives
 	$nonce_count = null;
 	$username = null;
-	
+
 	# the client must be asked for its credentials
 	header(sprintf(
 		'WWW-Authenticate: Digest realm="%s", domain="%s", nonce="%s", opaque="%s", algorithm="MD5", qop="auth"'
@@ -106,10 +106,11 @@ if (!$authorized) {
 		, $nonce
 		, $opaque
 	));
-	
+
 	# tell the user what's going on -- will be shown if she hits cancel
 	error(401, empty($_SERVER['PHP_AUTH_DIGEST'])
 		? NULL
 		: array('login failure')
 	);
 }
+

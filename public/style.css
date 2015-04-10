@@ -1,7 +1,7 @@
 @charset "utf-8";
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * get it at code.rasenplanscher.info
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * get it at github.com/rasenplanscher/simple-transfer
  */
 
 /* reset the most important browser defaults */
@@ -76,7 +76,7 @@ h2 + p, p:first-child {
 	margin-top: 0;
 }
 
-	
+
 /* labels are nice */
 label, input {
 	display: block;
@@ -111,7 +111,7 @@ label, input {
 		background: #fff url('upload.png') no-repeat 17px 50%;
 		padding-left: 50px;
 	}
-	
+
 	/* as tiresomely usual, file input are a pain in the rear */
 	input[type="file"] {
 		width: 345px;
@@ -252,3 +252,4 @@ table {
 			background-image: url('expired.png');
 			color: #a00;
 		}
+

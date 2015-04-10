@@ -1,7 +1,7 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 /*
@@ -66,3 +66,4 @@ $post_errors = array(
 
 # determine how frequently to purge the uploaded files
 $purge_interval = time2seconds($_configuration['purge interval']);
+

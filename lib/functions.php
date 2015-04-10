@@ -1,21 +1,21 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 
 
 /**
  * Present a size (in bytes) as a human-readable value
- * 
+ *
  * @param   Int         size, in bytes
  * @param   Int         number of digits after the decimal point, defaults to zero
- * 
+ *
  * @return  String
- * 
+ *
  * Precision is ignored for sizes smaller than MB.
- * 
+ *
  * Based on
  * 	http://www.php.net/manual/en/function.filesize.php#99333
  * which in turn is based on
@@ -34,13 +34,13 @@ function format_size($size, $precision=0) {
 
 /**
  * @param   String      duration, using the units d for days, h for hours, and m for minutes
- * 
+ *
  * @return  Integer     time to live for files, in seconds
  */
 function time2seconds($time) {
 	# find all occurrences of 'Nu', where N is an unsigned number and u is one of 'd', 'h', 'm'
 	preg_match_all('/[0-9]+[dhm]/', $time, $seconds);
-	
+
 	# convert all found time intervals into seconds
 	foreach($seconds[0] as $i => $s) {
 		switch(substr($s, -1)) {
@@ -53,7 +53,7 @@ function time2seconds($time) {
 		}
 		$seconds[$i] = $s;
 	}
-	
+
 	# return the number of seconds that make up the sum of all found time intervals
 	return array_sum($seconds);
 }
@@ -62,16 +62,16 @@ function time2seconds($time) {
 
 /**
  * generate a new, unique id
- * 
+ *
  * @return  String      hexadecimal number
  */
 function new_id() {
 	global $id_length;
-	
+
 	# generate a random 40-character hexadecimal number
 	# and shorten it the the length given in the configuration
 	$id = substr(sha1(microtime()), 0, $id_length);
-	
+
 	# check whether the id is already in use
 	# and retry if it is
 	if (db_exists($id))
@@ -82,21 +82,21 @@ function new_id() {
 
 /**
  * generate a URI
- * 
+ *
  * @param	String      tells the purpose of the uri to be determined
  * @param	String      hexadecimal number identifying a set of files previously uploaded, optional
- * 
+ *
  * @return  String      the desired uri
  */
 function uri($for, $id=NULL) {
 	global $basepath;
-	
+
 	# determine the base uri for the application
 	$uri = sprintf('http://%s%s'
 		, $_SERVER['HTTP_HOST']
 		, $basepath
 	);
-	
+
 	# return URIs appropriate for the given purpose
 	switch($for) {
 		case 'application':
@@ -116,32 +116,32 @@ function uri($for, $id=NULL) {
 
 /**
  * aborts with an error message
- * 
+ *
  * @param   Mixed       the error message as a string or an HTTP error code as an Integer
  * @param   Array       list of snippets to be displayed in addition to main error message, optional
  * @param   Array       list of placeholders and their substitutions, optional
- * 
+ *
  * @return  Void
  */
 function error($error, $snippets=array(), $substitutions=NULL) {
 	# discard all previous output
 	ob_clean();
-	
+
 	# terminate execution with the given error message
 	if (is_int($error)) {
 		# numerical error codes get a nice output
 		send_xhtml_header($error);
-		
+
 		yield('prefix');
-		
+
 		# show the main error message
 		yield("error $error", $substitutions);
 		# yield additional snippets after the error message
 		foreach($snippets as $snippet)
 			yield($snippet, $substitutions);
-		
+
 		yield('suffix');
-		
+
 		exit;
 	} else {
 		header('Content-Type: text/plain; charset=utf-8', NULL, 500);
@@ -151,26 +151,26 @@ function error($error, $snippets=array(), $substitutions=NULL) {
 
 /**
  * aborts with an error message, after logging a file related error
- * 
+ *
  * @param   String      hexadecimal number identifying a set of files previously uploaded, optional
  * @param   String      the error message
  * @param   Integer     HTTP error code
- * 
+ *
  * @return  Void
  */
 function file_error($id, $message, $code) {
 	# write to file log
 	db_append_log($id, $message);
-	
+
 	# terminate execution with the given error code
 	error($code);
 }
 
 /**
  * send the correct XHTML content header for all web browsers declaring acceptance
- * 
+ *
  * @param   Integer     HTTP response code, optional
- * 
+ *
  * @return  Void
  */
 function send_xhtml_header($status=NULL) {
@@ -182,17 +182,17 @@ function send_xhtml_header($status=NULL) {
 
 /**
  * print a snippet to the screen
- * 
+ *
  * @param   String      the snippet's name
  * @param   Array       list of placeholders and their substitutions, optional
- * 
+ *
  * @return  Void
  */
 function yield($name, $substitutions=NULL) {
 	global $locale;
 	# determine the snippet's file name
 	$name = str_replace(',', '', str_replace(' ', '_', $name));
-	
+
 	# if available, use the localized variant of the file
 	if (file_exists("snippets/$locale/$name.html"))
 		$data = file_get_contents("snippets/$locale/$name.html");
@@ -205,7 +205,7 @@ function yield($name, $substitutions=NULL) {
 	# well, someone obviously botched this!
 	else
 		error('faulty configuration! missing snippet: '.$name);
-	
+
 	if (isset($substitutions)) {
 		# determine the placeholder tokens to be expected in the snippet
 		$placeholders = array_keys($substitutions);
@@ -213,7 +213,7 @@ function yield($name, $substitutions=NULL) {
 			$placeholders[$i] = sprintf('##%s##'
 				, strtoupper($label)
 			);
-		
+
 		# print the snippet with placeholder token replaced by real data
 		print str_replace(
 			$placeholders,
@@ -224,3 +224,4 @@ function yield($name, $substitutions=NULL) {
 		# print unmodified snippet
 		print $data;
 }
+

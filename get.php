@@ -1,7 +1,7 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 if (empty($id)) {
@@ -10,34 +10,34 @@ if (empty($id)) {
 	yield('prefix');
 	yield('upload form', array('size' => format_size($max_filesize)));
 	yield('suffix');
-	
+
 } else if (preg_match("/^[0-9a-f]{{$id_length}}$/", $id)) {
 	# the user wants to retrieve a file
-	
+
 	db_append_log($id, 'start processing download request');
-	
+
 	db_append_log($id, 'client identification is '.$_SERVER['HTTP_USER_AGENT']);
-	
+
 	if (!db_exists($id, 'metadata'))
 		file_error($id, 'metadata missing, aborting', 404);
 	db_append_log($id, 'metadata exists');
-	
+
 	if (!($metadata = db_get_metadata($id)))
 		file_error($id, 'error loading metadata, aborting', 500);
 	db_append_log($id, 'metadata retrieval successful');
-	
+
 	if (time() > intval($metadata['expire']))
 		file_error($id, 'file has expired, aborting', 404);
 	db_append_log($id, 'file still valid');
-	
+
 	if (!db_exists($id, 'file'))
 		file_error($id, 'file missing', 404);
 	db_append_log($id, 'file exists');
-	
+
 	if (filesize('files/'.$id) != $metadata['size'])
 		file_error($id, 'file was changed, aborting', 500);
 	db_append_log($id, 'file untempered');
-	
+
 	if (
 		$_SERVER['HTTP_RANGE']
 		# the user only wants a part of the file
@@ -74,14 +74,14 @@ if (empty($id)) {
 						# no last byte given means don't stop before the end
 						$range[2] == ''
 						? $metadata['size'] - 1
-						: min((int) $range[2], $metadata['size'] - 1) 
+						: min((int) $range[2], $metadata['size'] - 1)
 					);
 				},
 				$ranges
 			)
 		)
 		# the ranges given are syntactically valid
-		
+
 		# there is no error message if the Range header is syntactically invalid
 		# because the HTTP standard says syntactically invalid Range headers should be ignored
 	) {
@@ -93,7 +93,7 @@ if (empty($id)) {
 			else
 				break;
 		}
-		
+
 		# bail if no valid ranges were given
 		if ($range == NULL) {
 			# also, tell the client how much data is available
@@ -101,19 +101,19 @@ if (empty($id)) {
 			error(416, NULL, array('maxrange' => $metadata['size']-1));
 		}
 		db_append_log($id, "request contains valid range (${range[0]}-${range[1]})");
-		
+
 		# if the requested range is equal to the file range,
 		# this request need not be considered a range request at all
 		if ($range[0] == 0 and $range[1] == $metadata['size'])
 			$range = NULL;
 	}
-	
+
 	db_append_log($id,
 		$range
 		? "will respond with partial file (range ${range[0]}-${range[1]}/${metadata['size']})"
 		: 'will respond with complete file'
 	);
-	
+
 	db_append_log($id, 'start sending headers');
 	if ($range) {
 		header('HTTP/1.1 206 Partial Content');
@@ -136,7 +136,7 @@ if (empty($id)) {
 	ob_end_clean();
 	flush();
 	db_append_log($id, 'headers sent');
-	
+
 	list($start, $end) = $range ?
 		array($range[0], $range[1]+1):
 		array(0, $metadata['size']);
@@ -152,15 +152,15 @@ if (empty($id)) {
 	db_append_log($id, 'sent all requested data');
 	fclose($file);
 	db_append_log($id, 'closed file');
-	
+
 	if ($metadata['virgin']) {
 		$metadata['virgin'] = false;
 		db_set_metadata($id, $metadata);
 		db_append_log($id, 'removed virgin status from file');
 	}
-	
+
 	db_append_log($id, 'processing of download request complete');
-	
+
 } else switch($id) {
 	case 'list':
 		# client wants a list of all valid files and is authorized to do so
@@ -168,13 +168,13 @@ if (empty($id)) {
 			send_xhtml_header();
 			yield('prefix');
 			yield('list prefix');
-			
+
 			# remove old files
 			db_purge();
-			
+
 			# retrieve a list of all remaining files
 			$files = db_list();
-			
+
 			# show file data to client
 			while($file = each($files)) {
 				$file = $file['value'];
@@ -198,7 +198,7 @@ if (empty($id)) {
 					)
 				));
 			}
-			
+
 			yield('list suffix');
 			yield('suffix');
 		} else
@@ -208,3 +208,4 @@ if (empty($id)) {
 		# the client requested something that is not here
 		error(404);
 }
+

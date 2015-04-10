@@ -1,7 +1,7 @@
 <?php
 /**
- * rpTransfer - a simple web app for asynchronously transferring single files
- * Copyright (c) 2010 rasenplanscher [ code.rasenplanscher.info ]
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
  */
 
 $pass =& $_configuration['authentication']['pass'];
@@ -15,7 +15,7 @@ if (
 	$authorized = true;
 	# allow list view if the sent credentials are those for list view
 	$list_allowed = $_POST['login'] == $pass['list'];
-	
+
 	# have the client reload with a GET request
 	header(sprintf('Location: %s'
 		, $request_uri
@@ -30,3 +30,4 @@ if (!$authorized)
 		array('login failure', 'login, simple') ,
 		array('uri' => $_SERVER['REQUEST_URI'])
 	);
+

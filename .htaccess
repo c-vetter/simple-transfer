@@ -1,1 +1,60 @@
-htaccess
+##
+# simple-transfer - a simple web app for asynchronously transferring single files
+# Copyright (c) 2010 rasenplanscher [ github.com/rasenplanscher ]
+##
+
+##
+# size configuration
+# highly permissive -- should be reduced to sizes that are actually acceptable
+##
+# the maximum file size PHP will accept
+php_value upload_max_filesize 255M
+# the maximum request size PHP will accept
+# this should be larger than the preceding setting
+php_value post_max_size 256M
+# the maximum request size httpd will accept
+# should be the same as the preceding setting, but must be in bytes
+# 256M = 256 * 1024 * 1024 = 268435456
+LimitRequestBody 268435456
+# the number of seconds after which PHP will stop accepting data from the client
+php_value max_input_time 255
+# the number of seconds after which PHP will stop executing
+# this should be larger than the preceding setting
+php_value max_execution_time 256
+
+
+
+
+
+
+
+
+##
+#
+#  DON'T CHANGE ANYTHING BELOW THIS LINE!!!!
+#
+##
+
+
+
+
+
+
+
+
+RewriteEngine On
+
+# :P
+RewriteRule favicon\.ico$ - [L]
+
+# prevent looping rewrite
+RewriteCond %{THE_REQUEST} !/public
+RewriteRule ^public/([^/]+)$ - [L]
+
+# deliver files from public
+RewriteCond public/$1 -F
+RewriteRule ^([^/]*)$ /public/$1 [L]
+
+# everything else is to be handled by the main app
+RewriteRule .* index.php
+
