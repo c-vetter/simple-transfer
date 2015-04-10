@@ -1,0 +1,112 @@
+@charset "utf-8";
+/**
+ * simple-transfer - a simple web app for asynchronously transferring single files
+ * get it at https://github.com/rasenplanscher/simple-transfer
+ */
+
+/* reset the most important browser defaults */
+* {
+	background: none;
+	border: 0 solid #fff;
+	border-collapse: separate;
+	color: inherit;
+	direction: ltr;
+	float: none;
+	font-family: 'DejaVu Sans', 'Verdana', 'Arial', 'Helvetica', sans-serif;
+	font-size: 1em;
+	font-style: normal;
+	font-variant: normal;
+	line-height: 1.7em;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	text-decoration: none;
+	text-indent: 0;
+	text-transform: none;
+	vertical-align: top;
+}
+
+/* general setup */
+html {
+	background: #eee url('background.png') repeat 30% 0;
+	color: #444;
+	font-size: 17px;
+	/* avoid horizontal skipping due to changing heights */
+	overflow: scroll;
+	/* anchor absolutely positioned elements to document root instead of viewport */
+	position: relative;
+}
+
+body {
+	margin: auto;
+	padding: 50px 50px 80px 260px;
+	width: 600px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 1.4em;
+}
+
+h2 {
+	font-size: 1.2em;
+}
+
+p, ul {
+	margin-bottom: 1.7em;
+}
+
+p:last-child, ul:last-child, ul ul {
+	margin-bottom: 0;
+}
+
+ul {
+	padding-left: 2em;
+}
+
+code {
+	border: 1px solid #bbb;
+	border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+	font-family: monospace;
+	padding: 0 5px;
+}
+
+em {
+	color: #080;
+}
+
+:link,
+:visited {
+	color: #069;
+}
+
+
+/* the "visible" blocks */
+div {
+	background: #fff;
+	border: 1px solid #bbb;
+	/**
+	 * since the round corners do look so much nicer _and_
+	 * because gecko and webkit are actually kind of not wrong in their way of dealing with the current status of CSS3
+	 * I'll accept this until CSS3 (and thus border-radius) gets recommendation status
+	 */
+	border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;
+	margin-bottom: 20px;
+	padding: 25px;
+	overflow: hidden;
+}
+
+#logo {
+	background: #fff url('logo.png') no-repeat center;
+	float: left;
+	height: 0;
+	margin-left: -202px;
+	padding: 137px 0 0 180px;
+	width: 0;
+}

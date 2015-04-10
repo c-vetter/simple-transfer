@@ -1,0 +1,465 @@
+<!doctype html>
+<html>
+	<head>
+		<title>rasenplanscher/simple-transfer</title>
+		<link type="text/css" rel="stylesheet" href="assets/style.css" media="screen" />
+		<link rel="icon" type="image/png" href="assets/icon.png" />
+	</head>
+	<body>
+		<div id="logo"></div>
+		<div>
+			<h1>simple-transfer</h1>
+			<p>a simple web app for asynchronously transferring single files</p>
+			<p>Get the code at <a href="https://github.com/rasenplanscher/simple-transfer/">github</a></p>
+			<p>Direct download:
+				<a href="https://github.com/rasenplanscher/simple-transfer/tarball/master">tar archive</a>
+				or
+				<a href="https://github.com/rasenplanscher/simple-transfer/zipball/master">zip archive</a>
+			</p>
+		</div>
+		<div>
+			<h2>
+			<a id="table-of-contents">Table of Contents</a>
+			</h2>
+			<ul>
+				<li>
+					<a href="#introduction">Introduction</a>
+					<ul>
+						<li><a href="#what-it-is">What it is</a></li>
+						<li><a href="#what-it-is-not">What it is not</a></li>
+					</ul>
+				</li>
+				<li><a href="#requirements">Requirements</a></li>
+				<li>
+					<a href="#installation">Installation</a>
+					<ul>
+						<li><a href="#advanced">Advanced</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#configuration">Configuration</a>
+					<ul>
+						<li><a href="#configuration-file">Configuration File</a></li>
+						<li><a href="#users-directory">Users Directory</a></li>
+						<li><a href="#snippets-directory">Snippets Directory</a></li>
+						<li><a href="#public-directory">Public Directory</a></li>
+						<li><a href="#htaccess-file">Htaccess File</a></li>
+					</ul>
+				</li>
+				<li><a href="#known-issues">Known Issues</a></li>
+			</ul>
+		</div>
+		<div>
+			<h2>
+			<a id="introduction">Introduction</a>
+			</h2>
+			<p>
+				This is a little something I produced in response to my employer's frequent
+				problems with email attachments sent across different corporate infrastructures. My
+				solution was simple: replace attachments with download links. Direct file
+				transfers just work far more reliably than email attachments.
+			</p>
+			<p>
+				Later on I went over it to make it a little cleaner and to add digest
+				authentication. Why digest authentication? Because I felt like it &ndash; I doubt
+				its utility here, but now it's there to use. Originally, this was not intended
+				as a real multi-user application, but since digest authentication requires
+				a user name, I also added the "multiuser" authentication scheme.
+			</p>
+			<p>
+				Well, that's about it as far as the past goes. The future is pretty much the
+				present &ndash; I currently have no intention of extending this beyond what's here
+				now.
+			</p>
+			<h3>
+			<a id="what-it-is">What it is</a>
+			</h3>
+			<p>
+				This application aims to be as simple as possible while offering these features:
+			</p>
+			<ul>
+				<li>file upload by authorized people
+					<ul>
+						<li>optionally with named user accounts</li>
+						<li>optionally with encrypted login</li>
+					</ul>
+				</li>
+				<li>file download by anyone who has the file's download URI</li>
+				<li>non-guessable download URIs</li>
+				<li>GUI without "eye cancer" ;)</li>
+				<li>logging of all relevant actions and steps</li>
+			</ul>
+			<h3>
+			<a id="what-it-is-not">What it is not</a>
+			</h3>
+			<p>
+				Generally, this is not anything beyond what I specified above. Specifically,
+				you should look elsewhere if you want some of this:
+			</p>
+			<ul>
+				<li>encrypted file transfer (can be done by running this over SSL/TLS, <em>but</em>
+				that's absurd since the download does not require authentication &ndash; by design)</li>
+				<li>authentication before download (in itself pretty easy to get in here, but
+				doesn't make sense without other additions)</li>
+				<li>online user account management (dude, just too much)</li>
+				<li>online configuration (not worth the hassle)</li>
+				<li>enterprise grade scalability</li>
+			</ul>
+			<p>
+				For any and all of these there are solutions available that do offer them,
+				probably some of them for free.
+			</p>
+		</div>
+		<div>
+			<h2>
+			<a id="requirements">Requirements</a>
+			</h2>
+			<p>
+				I don't really know. I developed this with PHP 5.3 on an Apache web server 2.2
+				with mod_rewrite. It will probably work with older software, but I don't know
+				how old. Frankly, I'm too lazy to check. Also, I don't really care because
+				Apache 2.2 and PHP 5.3 have been around long enough for adoption.
+			</p>
+			<p>
+				Apart from that, I'm pretty sure it would be rather easy to make this run on
+				Apache 1.3 and PHP 4 &ndash; I'm not using any really fancy stuff here. The
+				.htaccess file would certainly need no changes at all.
+			</p>
+			<p>
+				I am not making any promises &ndash; if it doesn't work for you, have a look at your
+				logs and fix what they tell you to fix. Mostly, it'll be about activating
+				server modules and correcting file permissions.
+			</p>
+		</div>
+		<div>
+			<h2>
+			<a id="installation">Installation</a>
+			</h2>
+			<p>
+				As everything else here, this should be simple (for details on unclear points,
+				see the "advanced" section):
+			</p>
+			<ul>
+				<li><code>git-clone</code> or download and unpack the archive</li>
+				<li>make sure that your web server can write to these directories:
+					<ul>
+						<li>files</li>
+						<li>logs</li>
+						<li>metadata</li>
+					</ul>
+				</li>
+			</ul>
+			<p>
+				Well, that's it already, now you'll want to configure your brand new web app &ndash;
+				see the "configuration" section for that.
+			</p>
+			<h3>
+			<a id="advanced">Advanced</a>
+			</h3>
+			<p>
+				Woohoo! "Advanced" section :) Actually, it's not that advanced, it's more about
+				me telling you some additional details.
+			</p>
+			<h4>Git-clone</h4>
+			<p>
+				You need command-line access to your web server for this. That
+				usually comes in the form of an ssh login. If you don't know what that is, ask
+				your host or go with plan B (download and unpack). When you're logged into the
+				command line, execute this:
+				<code>git clone SOURCE DESTINATION</code>
+				where <code>SOURCE</code> is <code>https://github.com/rasenplanscher/simple-transfer.git</code> and
+				<code>DESTINATION</code> is the directory where you want the application to reside. If
+				unsure, ask your host about this.
+			</p>
+			<h4>Download and unpack</h4>
+			<p>
+				Use your favorite download tool (your web browser will do)
+				to download either <code>https://github.com/rasenplanscher/simple-transfer/tarball/master</code>
+				or <code>https://github.com/rasenplanscher/simple-transfer/zipball/master</code>, then unpack it
+				using your favorite archiving tool. If unsure, use the second download URI.
+				Depending on your archiver you might end up with a directory containing the
+				relevant files and directories or with one containing a single directory which
+				contains the relevant files. Put the directory containing the relevant files on
+				your web server.
+			</p>
+			<h4>Location</h4>
+			<p>
+				Generally, you should put this where you put all your applications
+				and then setup a new domain (a third-level domain will do nicely) pointing to
+				it. I made sure you can use this in a directory within a domain, but I do think
+				that every application should have its own domain. That should not be a
+				problem. If your host/domain provider doesn't let you setup new subdomains at
+				will, you should switch to another one!
+			</p>
+			<h4>Permissions</h4>
+			<p>
+				You should give ownership of the directories <code>files</code>, <code>logs</code>, and
+				<code>metadata</code> to your web server's user, or at least its user group. That way
+				everything will run smoothly and be pretty much as secure as it's gonna get in
+				this regard. Then again, you will probably get away with just doing
+				<code>chmod 0777 files logs metadata</code> since, in case of a security breach those
+				directories will probably be among the least of your concerns...
+			</p>
+		</div>
+		<div>
+			<h2>
+			<a id="configuration">Configuration</a>
+			</h2>
+			<p>
+				There are several ways to customize this bugger without messing with its
+				internals:
+			</p>
+			<ul>
+				<li>configuration file &ndash; set some parameters that change the behaviour</li>
+				<li>users directory &ndash; setup users in multi-user environments</li>
+				<li>snippets directory &ndash; change the markup output</li>
+				<li>public directory &ndash; change the non-markup output</li>
+				<li>htaccess file &ndash; limit uploadable file sizes and time limits</li>
+			</ul>
+			<p>
+				Note that you need not change any setting &ndash; this should run out of the box, as
+				long as your server meets all the requirements. <em>But</em> you should make a
+				decision as to which mode of authentication to use and set that up. If you
+				stick with "simple" you should change the passes for that. Otherwise see the
+				section about the users directory and replace the samples with real users.
+			</p>
+			<h2>
+			<a id="configuration-file">Configuration File</a>
+			</h2>
+			<p>
+				The file by the name of <code>CONFIGURATION</code> contains the configuration for the
+				application's behaviour. The settings have this format:
+				<code>"key": "value"</code>
+			</p>
+			<p>
+				<em>Don't</em> change <em>anything</em> other than the <em>values</em>!
+			</p>
+			<p>
+				The configuration file is annotated, but this here might help in understanding
+				it fully and, more importantly, how it affects the application and you.
+			</p>
+			<p>
+				It starts off with some basic data:
+			</p>
+			<ul>
+				<li>
+					<code>locale</code>: the application locale, basically a 2-character language code. The
+					locales are expected as sub directories of snippets. In those directories, in
+					turn, are expected parts of HTML files that are used to build the
+					application's HTML output. By default available are these locales:
+					<ul>
+						<li><code>""</code>: displays only a bare minimum of text, no complete sentences, used as
+							fallback in case a snippet is missing from the current locale; also, this
+						locale's files are found immediately in the snippets directory</li>
+						<li><code>"en"</code>: English, final fallback for missing snippets</li>
+						<li><code>"de"</code>: German</li>
+					</ul>
+				</li>
+				<li>
+					<code>ID length</code>: the length of a file ID. Every uploaded file gets a unique
+					identifier: its ID. A longer file ID enables more files simultaneously stored
+					and fewer retries to find unique IDs. A shorter file ID is usually more
+					visually appealing. Generally, IDs should be at least 4 characters long.
+					Anything shorter looks strange and will leed to unnecessarily high numbers of
+					retries during ID generation. The maximum length is 40 characters &ndash; any
+					higher setting will have no consequence. You will probably not need even that
+					high a value:
+					<ul>
+						<li><code>"4"</code>: more than 60,000 unique IDs</li>
+						<li><code>"8"</code>: more than 4,000,000,000 different IDs<br>
+							<em>Note</em>: If you do need a value beyond ten or so characters, this app will
+							probably be insufficient for your needs!<br>
+							<em>Note</em>: changing this makes all previously uploaded files inaccessible &ndash;
+							they are not deleted, but a request for such a file will yield an error of
+						the type "unknown file".</li>
+					</ul>
+				</li>
+				<li>
+					<code>file ttl</code>: "time to live" &ndash; the time a file will be available after upload.
+					This dependends on your taste and server capacity. Some sample values:
+					<ul>
+						<li><code>"7d"</code>: exactly one week</li>
+						<li><code>"24h"</code>: one day, alternatively you can write "1d" or "1440m" ;)</li>
+						<li><code>"2d 12h"</code>: two days and a half</li>
+					</ul>
+				</li>
+				<li>
+					<code>purge interval</code>: the time that has to pass between purges. Takes the same
+				values as <code>file ttl</code></li>
+			</ul>
+			<p>
+				Next are the authentication settings. So you don't miss them, they're
+				conveniently announced and indented. They are these:
+			</p>
+			<ul>
+				<li>
+					<code>mode</code>: how authentication is handled. This is the most important setting as
+					far as outward security is concerned &ndash; the possible values:
+					<ul>
+						<li><code>"simple"</code>: This is the default setting. With this there are two logins &ndash;
+							one for uploading files and one for viewing the list (with the latter, one
+							can also upload files). This grants some basic security in that a potential
+							attacker would at least need some kind of reason to try and break in. This
+							can be cracked fairly easily, but it will suffice in most cases due to the
+							public nature of the application and because even after breaking in, the
+							most an attacker can do is filling your server's hard drive with his files.<br>
+							<em>Note</em>: With "can be cracked fairly easily" I am talking about a motivated
+							and somewhat skilled individual (or a script-kiddie) &ndash; cracking this
+							is not feasible with a normal user's basic user agent. An attack would by
+							no means be expensive, but most people who have the know-how won't bother
+						pestering you &ndash; unless you give them a reason to.</li>
+						<li><code>"multiuser"</code>: As the name says, with this you can setup several different
+							users, all with their own user names and pass codes. Permission to access
+							the list view is granted on a per-user basis. The security level is pretty
+							much the same as with <code>"simple"</code>. The main advantage is that you can
+							see who uploaded which file because the user names are logged with the
+							metadata.<br>
+							<em>Note</em>: If you think the fact that there are several users makes an attack
+							harder to any meaningful degree, you're mistaken. The only thing that may
+							take longer is finding a user with permission to access the list-view. If
+							the attacker is not too stupid, though, that extra time is negligible &ndash;
+						less than a second, assuming he has already collected the user data.</li>
+						<li><code>"digest"</code>: This is as secure as it gets with this application. This one
+							uses encryption! Woohoo! This uses the well-known digest authentication
+							mechanism. That means when navigating to the app, the user is prompted by
+							his web client to tell his credentials. This happens through a normal
+							name/pass dialog, which the user is familiar with. The web client then
+							encrypts that data and sends the encrypted data to the app, which encrypts
+							the correct data. If both encrypted sets of data are the same, the user
+							can continue. This does indeed make the application considerably more
+							secure &ndash; an attacker would now have to work to get in!<br>
+							<em>Note</em>: Only the login itself is encrypted! This is no SSL/TLS!<br>
+							<em>Note</em>: The increased security comes at a two-fold price:
+							<ul>
+								<li>The execution takes more time, which probably won't be noticed by any user</li>
+								<li>You have more work setting up the users; see the <code>"users directory"</code>
+								section for details</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<code>pass</code>: If "mode" is set to "simple", the login given by the user is
+					validated against the contents of this.
+					<ul>
+						<li><code>"base"</code>: if the given login is the same as this setting's value, the user
+						may upload files</li>
+						<li><code>"list"</code>: if the given login is the same as this setting's value, the user
+							may access the list view <em>and</em> upload files
+							If you want to disallow the list-view altogether, you can just disable the
+							"list" key. If you don't need to exclude anyone from the list view who should
+							be able to upload files (e.g. you're the only one sending files), you can
+						just disable the <code>"base"</code> key.</li>
+					</ul>
+				</li>
+				<li>
+					<code>realm</code>: This is used for digest authentication. Generally, you can leave
+					this as it is &ndash; it doesn't affect what capabilities are used, or how. For
+					more details see the section on digest authentication.<br>
+				<em>Note</em>: Changing this makes it necessary to rehash <em>all</em> passes!</li>
+			</ul>
+			<p>
+				Finally there's the <code>"upload result"</code> collection. This works in concert with the
+				markup files in the snippets directory. Therefore these settings are only
+				relevant if you intend to change the HTML code. Every setting in this
+				collection relates to a possible outcome of uploading a file. The keys are
+				self-explanatory and annotated in the configuration file, so I won't go into
+				more detail here. The only important thing to know here is: the value is used
+				for the file name of the snippet that makes up the message part of the result
+				page.
+			</p>
+			<h2>
+			<a id="users-directory">Users Directory</a>
+			</h2>
+			<p>
+				If the authentication mode is set to <code>"multiuser"</code> or <code>"digest"</code>,
+				the <code>"users"</code>directory comes into play. It contains plain-text files. These
+				represent valid users. The directory at first contains two sample users that
+				illustrate the whole thing. One is called <code>user</code>, the other one <code>digest</code>.
+			</p>
+			<p>
+				The file name is used as the user name, so if you want to setup a user
+				"John Doe", you create a file "John Doe". Each file contains two key/value
+				pairs. For multiuser authentication, one key is <code>pass</code>, the other one is <code>list</code>.
+				For digest authentication the two keys are <code>hash</code> and <code>list</code>. To see how the
+				files are formatted, look at the sample files &ndash; too simple to explain.
+			</p>
+			<p>
+				The <code>list</code> key can have a value of <code>0</code> or <code>1</code>.
+				If it is <code>1</code>, the user may access the list view; if it is <code>0</code>, he cannot.
+			</p>
+			<p>
+				The <code>pass</code> key takes the user's pass code. The sample user <code>user</code> has the pass
+				<code>password</code>.
+			</p>
+			<p>
+				The <code>hash</code> key takes the user's pass digest hash. This hash is generated by
+				applying the MD5 algorithm to the string that results from concatenating the
+				the user name, the realm and the pass code, with colons in between:
+				<code>username:realm:passcode</code>
+			</p>
+			<p>
+				To get that hash, you can do this in most shell environments:<br>
+				<code>echo -n 'username:realm:pass' | openssl md5</code>
+			</p>
+			<p>
+				The sample user <code>"digest"</code> has the pass <code>"hash"</code>, so its hash is calculated like
+				this (as long as the realm setting wasn't changed):<br>
+				<code>echo -n 'digest:simple-transfer:hash' | openssl md5</code>
+			</p>
+			<h2>
+			<a id="snippets-directory">Snippets Directory</a>
+			</h2>
+			<p>
+				The directory <code>snippets</code> contains the HTML part of the application.
+				Non-localized snippets are immediately within, localized ones are in sub
+				directories named after their respective locales. Snippets are used by their
+				file names. If the snippet to be used is found in the directory corresponding
+				to the current locale, that one is used. Otherwise, the non-localized file is
+				used. Should that fail, the English-localized file (directory <code>en</code>) is used. In
+				case that also fails, an error message is thrown and the execution is aborted.
+			</p>
+			<p>
+				Note that the final pages are expected to be valid XHTML. Also, for MSIE it is
+				delivered as <code>text/html</code>, so mind compatibility.
+			</p>
+			<h2>
+			<a id="public-directory">Public Directory</a>
+			</h2>
+			<p>
+				This contains all static files, i.e. images and style sheets. Changing this is
+				completely straightforward.
+			</p>
+			<h2>
+			<a id="htaccess-file">Htaccess File</a>
+			</h2>
+			<p>
+				As this application is developed for the Apache web server it makes use of the
+				<code>.htaccess</code> file.
+			</p>
+			<p>
+				The <code>.htaccess</code> file is part of the server configuration, local to the path where
+				it resides. So you can break this app by editing that file &ndash; as long as you
+				stick with the comments, however, you should be fine.
+			</p>
+		</div>
+		<div>
+			<h2>
+			<a id="known-issues">Known Issues</a>
+			</h2>
+			<ul>
+				<li>Basically no error handling</li>
+				<li>Low level of security unless digest authentication is used</li>
+				<li>Digest authentication does not support these optional features:
+					<ul>
+						<li><code>auth-int</code></li>
+						<li><code>stale</code></li>
+						<li><code>MD5-sess</code></li>
+					</ul>
+				</li>
+				<li>file fields look wrong in every browser &ndash; this is due to all the browser
+				developers treating them as special in regard to stylability</li>
+			</ul>
+		</div>
+	</body>
+</html>
